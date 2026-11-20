@@ -1,0 +1,23 @@
+# deps and builds
+node_modules/
+dist/
+.wrangler/
+engine-rs/target/
+arch-bench/.venv/
+__pycache__/
+*.pyc
+
+# training state: 300+ checkpoints, replay buffer, live monitor data (models/ holds the released model)
+arch-bench/checkpoints/
+arch-bench/web_data/
+arch-bench/az_mcts_results.json
+engine-rs/checkpoints/
+
+# work-in-progress art and scratch images (shipped sprites live in src/assets)
+public/
+generated_images/
+
+# local tooling
+.claude/
+.DS_Store
+*.tmp

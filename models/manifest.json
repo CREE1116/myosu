@@ -1,0 +1,20 @@
+{
+  "modelName": "D4OverlapPatternV2 (3-Head) + Adaptive MCTS",
+  "params": 373395,
+  "championGen": 314,
+  "updatedAt": "2026-11-20T21:02:15.499342+00:00",
+  "checkpoints": [
+    {
+      "id": "ckpt-314",
+      "gen": 314,
+      "file": "gen_314.npz",
+      "binFile": "gen_314.bin",
+      "totalGames": 40704,
+      "elo": 1641,
+      "crit": 86.0,
+      "vsRbRecord": "8/0/4",
+      "vsRbWr": 66.7,
+      "isChampion": true
+    }
+  ]
+}
