@@ -45,6 +45,7 @@ html {
 html,
 body {
   min-height: 100%;
+  overflow-x: clip; /* nothing may widen the page past the screen (mobile would zoom to fit) */
   /* faint omok-grid paper so the page never feels empty */
   background:
     radial-gradient(ellipse at 50% 35%, transparent 40%, var(--bg) 85%),
@@ -3348,7 +3349,7 @@ select:focus-visible {
 
 .hint-bar-row {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 6px;
 }
 
@@ -3410,7 +3411,8 @@ select:focus-visible {
   z-index: 5;
   view-transition-name: none;
   opacity: 0;
-  translate: 40px 0;
+  /* Slides up into place: a sideways offset made the page wider than a phone screen. */
+  translate: 0 24px;
   pointer-events: none;
   transition: opacity 0.3s ease, translate 0.35s cubic-bezier(0.2, 0.9, 0.25, 1.2);
 }
@@ -3655,7 +3657,7 @@ select:focus-visible {
   .workspace.is-play .hint-bar {
     order: -1;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 6px;
     padding: 0;
     border: 0;
@@ -4069,15 +4071,18 @@ select:focus-visible {
   color: var(--scarf);
 }
 
-/* Phones and touch screens: the lobby and the game screen never scroll or rubber-band. */
-@media (max-width: 1040px), (pointer: coarse) {
+/* Phones: the lobby and the game screen are laid out to fit one screen, so they never scroll
+   or rubber-band. Wider layouts (tablets, landscape phones) can be taller than the screen and keep scrolling. */
+@media (max-width: 600px) {
   html.no-scroll,
   html.no-scroll body {
     height: 100%;
     overflow: hidden;
     overscroll-behavior: none;
   }
+}
 
+@media (max-width: 1040px), (pointer: coarse) {
   html.no-scroll .app {
     touch-action: manipulation; /* no double-tap zoom on the board */
   }

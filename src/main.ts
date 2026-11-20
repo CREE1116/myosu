@@ -67,11 +67,8 @@ const CAT_NAME: Record<CatId, string> = { kkamang: '까망이', hayang: '하양�
 const OPPONENT_KEY = 'myosu_opponent';
 /** Takebacks per game: the easy cat is more forgiving. */
 const UNDO_LIMIT: Record<CatId, number> = { kkamang: 1, hayang: 3 };
-type HintKind = 'move' | 'win';
-const HINTS: Array<[HintKind, string]> = [
-  ['move', '한 수 추천'],
-  ['win', '필승 수'],
-];
+/** 한 수 추천 per game: the other cat drops by with its best move. */
+const HINTS_PER_GAME = 3;
 const otherCat = (c: CatId): CatId => (c === 'kkamang' ? 'hayang' : 'kkamang');
 
 /** A tiny picture of a puzzle position for the list. */
@@ -1437,7 +1434,7 @@ class GomokuApp {
   private catSeenMoves = -1;
   private undoLeft = 0;
   /** Each hint kind can be used once per game; the other cat drops by to give it. */
-  private hintsUsed = new Set<HintKind>();
+  private hintsLeft = HINTS_PER_GAME;
   private hintCells: Coord[] = [];
   private hintBusy = false;
   private helper = new CatView(() => {});
@@ -3005,7 +3002,7 @@ class GomokuApp {
     this.catSeenMoves = 0;
     this.gameOpponent = this.opponent;
     this.undoLeft = UNDO_LIMIT[this.gameOpponent];
-    this.hintsUsed.clear();
+    this.hintsLeft = HINTS_PER_GAME;
     this.hintCells = [];
     this.hideHelper();
     this.cat.setCharacter(this.gameOpponent, CAT_NAME[this.gameOpponent]);
@@ -3082,17 +3079,14 @@ class GomokuApp {
     const row = document.createElement('div');
     row.className = 'hint-bar-row';
     const myTurn = !finished && !this.aiThinking && this.currentPlayer === this.humanPlayer;
-    for (const [kind, label] of HINTS) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'hint-btn';
-      btn.textContent = label;
-      const used = this.hintsUsed.has(kind);
-      btn.classList.toggle('used', used);
-      btn.disabled = used || !myTurn || this.hintBusy;
-      btn.addEventListener('click', () => void this.useHint(kind));
-      row.appendChild(btn);
-    }
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'hint-btn';
+    btn.textContent = `한 수 추천 (남은 ${this.hintsLeft}번)`;
+    btn.classList.toggle('used', this.hintsLeft <= 0);
+    btn.disabled = this.hintsLeft <= 0 || !myTurn || this.hintBusy;
+    btn.addEventListener('click', () => void this.useHint());
+    row.appendChild(btn);
     // Takebacks live here too, next to the other kinds of help.
     this.undoBtn.classList.add('hint-undo');
     this.hintBarEl.append(head, row, this.undoBtn);
@@ -3115,9 +3109,9 @@ class GomokuApp {
     this.helper.say(null);
   }
 
-  /** The other cat drops by. A hint with nothing to show is not used up. */
-  private async useHint(kind: HintKind): Promise<void> {
-    if (this.hintsUsed.has(kind) || this.hintBusy || this.aiThinking) return;
+  /** The other cat drops by with its best move. A hint with nothing to show is not used up. */
+  private async useHint(): Promise<void> {
+    if (this.hintsLeft <= 0 || this.hintBusy || this.aiThinking) return;
     if (this.currentPlayer !== this.humanPlayer || this.winner || this.isDraw) return;
     const help = this.voice(otherCat(this.gameOpponent)).help;
     const me = this.humanPlayer;
@@ -3125,26 +3119,20 @@ class GomokuApp {
     let cells: Coord[] = [];
     let text = '';
 
-    if (kind === 'win') {
-      const vcf = findVcfSequence(this.board, me, RULES, 9, 80);
-      if (vcf && legal(vcf[0])) cells = [vcf[0]];
-      text = pickLine(cells.length ? help.win(formatCoord(cells[0].row, cells[0].col)) : help.noWin, Date.now());
-    } else {
-      this.hintBusy = true;
-      this.showHelper(pickLine(help.thinking, Date.now()), 'think');
-      this.renderSeats();
-      const ckpt = this.getActiveCheckpoint();
-      const last = this.history[this.history.length - 1];
-      const best = ckpt
-        ? await chooseCheckpointMoveAsync(this.board, me, ckpt.weights, last ? { row: last.row, col: last.col } : null, 160, 950)
-        : chooseAIMove(this.board, me, RULES, 'lv4');
-      this.hintBusy = false;
-      if (best && legal(best)) cells = [{ row: best.row, col: best.col }];
-      text = pickLine(cells.length ? help.move(formatCoord(cells[0].row, cells[0].col)) : help.none, Date.now());
-    }
+    this.hintBusy = true;
+    this.showHelper(pickLine(help.thinking, Date.now()), 'think');
+    this.renderSeats();
+    const ckpt = this.getActiveCheckpoint();
+    const last = this.history[this.history.length - 1];
+    const best = ckpt
+      ? await chooseCheckpointMoveAsync(this.board, me, ckpt.weights, last ? { row: last.row, col: last.col } : null, 160, 950)
+      : chooseAIMove(this.board, me, RULES, 'lv4');
+    this.hintBusy = false;
+    if (best && legal(best)) cells = [{ row: best.row, col: best.col }];
+    text = pickLine(cells.length ? help.move(formatCoord(cells[0].row, cells[0].col)) : help.none, Date.now());
 
     if (cells.length) {
-      this.hintsUsed.add(kind);
+      this.hintsLeft -= 1;
       this.hintCells = cells; // an empty answer keeps any earlier hint on the board
     }
     this.showHelper(text, cells.length ? 'happy' : 'idle');

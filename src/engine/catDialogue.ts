@@ -82,8 +82,6 @@ export interface CatVoice {
     thinking: string[];
     none: string[];
     move: (c: string) => string[];
-    win: (c: string) => string[];
-    noWin: string[];
   };
   /** Going over a finished game together. `c` is the better move. */
   review: {
@@ -170,8 +168,6 @@ export const VOICES: Record<CatId, CatVoice> = {
       thinking: ['잠깐, 내가 봐 줄게!', '어디 보자~'],
       none: ['음, 이번엔 잘 모르겠어. 감 가는 대로 둬!'],
       move: (c) => [`${c} 어때? 나라면 거기 둔다.`, `${c}! 거기가 제일 좋아 보여.`, `내 감으로는 ${c}야. 믿어 봐!`],
-      win: (c) => [`${c}부터 몰아치면 이겨! 쭉 가!`, `보인다! ${c}부터 연달아 넷 만들면 끝이야.`],
-      noWin: ['아직 이기는 길은 안 보여. 조금 더 키워 봐.', '음, 필승 수는 아직이야. 줄부터 늘려!'],
     },
     review: {
       scanning: ['think', ['어디서 갈렸는지 꼼꼼히 볼게. 잠깐만~', '어디 보자, 수 하나하나 다시 읽어 볼게.']],
@@ -244,8 +240,6 @@ export const VOICES: Record<CatId, CatVoice> = {
       thinking: ['음, 잠깐만.', '어디 한번 볼까.'],
       none: ['음, 나도 잘 모르겠네. 편하게 둬.'],
       move: (c) => [`음, ${c}가 좋아 보여.`, `${c} 어때? 줄이 잘 이어질 것 같아.`, `나라면 ${c}에 둘래.`],
-      win: (c) => [`어라, ${c}부터 이어 가면 이길 수 있겠다.`, `${c}부터 넷을 계속 만들면 돼. 천천히.`],
-      noWin: ['아직은 이기는 길이 안 보이네.', '음, 이기는 수는 아직이야. 조금 더 키워 보자.'],
     },
     review: {
       scanning: ['think', ['어디서 갈렸는지 천천히 볼까.', '음, 처음부터 한번 볼게.']],

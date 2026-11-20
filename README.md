@@ -17,6 +17,15 @@
 
 ---
 
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/lobby.jpg" width="200" alt="로비"><br><sub>로비</sub></td>
+    <td align="center"><img src="docs/screenshots/game.jpg" width="200" alt="대국과 훈수"><br><sub>대국 · 하양이의 훈수</sub></td>
+    <td align="center"><img src="docs/screenshots/review.jpg" width="200" alt="복기 승부처"><br><sub>복기 · 승부처</sub></td>
+    <td align="center"><img src="docs/screenshots/puzzles.jpg" width="200" alt="묘수풀이"><br><sub>묘수풀이</sub></td>
+  </tr>
+</table>
+
 ## 고양이 소개
 
 | | 까망이 | 하양이 |
@@ -32,7 +41,7 @@
 
 **대국** — 흑이나 백을 골라 둡니다. 흑의 금수(3·3, 4·4, 장목)를 판정해서 알려 줘요. 화면에는 고양이의 말과 형세 그래프만 있어요.
 
-**훈수** — 막히면 다른 고양이가 판 구석에 와서 *한 수 추천*이나 *필승 수*를 한 번씩 알려 줍니다. 상대 고양이는 그걸 듣고 삐져요.
+**훈수** — 막히면 다른 고양이가 판 구석에 와서 자기라면 어디 둘지 알려 줍니다. 한 판에 3번까지. 상대 고양이는 그걸 듣고 삐져요.
 
 **복기** — 끝난 판을 열면 고양이가 승부처를 짚어 줍니다. 추측은 보여 주지 않아요.
 - *놓친 필승*: 넷으로 이기는 수순이 있었는데 놓친 수. 수순을 끝까지 탐색해서 확인합니다.
